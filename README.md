@@ -4,24 +4,50 @@ A full-stack employee management application with a web interface and a custom d
 
 ## Project Overview
 
-This project consists of two main components:
+This project implements a complete relational database management system (RDBMS) with two main components:
 
-1. **Node.js Web Application**: A web-based employee management system with CRUD operations
-2. **Java Database REPL**: A command-line database query interface
+1. **Java Database REPL**: A custom SQL query interface providing an interactive command-line environment for database operations
+2. **Node.js Web Application**: A web-based employee management system demonstrating CRUD operations with the database
+
+The project showcases a functional RDBMS implementation with support for table declarations, CRUD operations, indexing, primary and unique key constraints, and SQL joins.
+
+## RDBMS Architecture
+
+### Core Capabilities
+
+The database system supports:
+
+- **Table Declaration**: Create tables with specified column data types (INTEGER, VARCHAR, DATE, SERIAL, etc.)
+- **Constraints**: Primary keys, unique constraints, and NOT NULL constraints
+- **Indexing**: Create indexes on columns for optimized query performance
+- **CRUD Operations**: Full support for SELECT, INSERT, UPDATE, and DELETE operations
+- **Joins**: Multi-table queries with INNER JOIN, LEFT JOIN, and other join operations
+- **Data Integrity**: Foreign key relationships and referential integrity
+
+### REPL Interface
+
+The interactive REPL mode allows users to:
+- Execute SQL commands in real-time
+- View formatted query results
+- Get feedback on operation success or errors
+- Work with an intuitive command-line interface
 
 ## Features
 
 ### Web Application
-- View all employees with their department and role information
-- Create new employee records
+- View all employees with their department and role information via joined tables
+- Create new employee records with automatic database insertion
 - Update existing employee information
-- Delete employee records
+- Delete employee records with referential integrity
 - Clean, responsive UI with modal forms
+- Demonstrates practical CRUD operations against the RDBMS
 
 ### Database REPL
 - Execute SQL queries directly from the command line
 - View query results in a formatted table
 - Support for all standard SQL operations (SELECT, INSERT, UPDATE, DELETE, CREATE, DROP)
+- Interactive prompt with database name and ready indicator
+- Error handling and query validation
 
 ## Prerequisites
 
@@ -139,13 +165,33 @@ mvn exec:java
 
 ### Java REPL
 
-```sql
+Start the REPL with Maven:
+
+```bash
+mvn clean compile
+mvn compile exec:java
+```
+
+Interactive session example:
+
+```
+mydb REPL ? type EXIT to quit
+mydb=# INSERT INTO departments(department_name) VALUES('Relations')
+INSERT 0 1
 mydb=# SELECT * FROM vw_employees;
+(results displayed in formatted table)
 mydb=# INSERT INTO employees (employee_name, company_email, department_role_id, hire_date) VALUES ('John Doe', 'john.doe@company.com', 1, '2024-01-01');
+INSERT 0 1
 mydb=# UPDATE employees SET company_email = 'john.d@company.com' WHERE employee_id = 5;
+UPDATE 1
 mydb=# DELETE FROM employees WHERE employee_id = 5;
+DELETE 1
+mydb=# CREATE INDEX idx_employee_email ON employees(company_email);
+CREATE INDEX
 mydb=# EXIT
 ```
+
+The REPL supports all standard PostgreSQL commands and provides immediate feedback on query execution results.
 
 ## Technologies Used
 
@@ -162,13 +208,36 @@ mydb=# EXIT
 - JDBC (PostgreSQL driver)
 - Maven
 
-## License
+## How It Works
 
-This project is part of the Pesapal technical challenge.
+### Database Engine Design
 
-## Notes
+The project uses a layered architecture:
+
+1. **DatabaseEngine Interface**: Defines the contract for database operations
+2. **RealDbEngine**: Implements database operations using JDBC and PostgreSQL
+3. **DbRepl**: Provides the interactive command-line interface, parsing user input and executing queries
+4. **QueryResult**: Wraps query results for formatting and display
+
+### Web Application Integration
+
+The Node.js web application connects directly to PostgreSQL via the `pg` driver, demonstrating how a production application would interact with the RDBMS. The application:
+
+- Executes CRUD queries against properly normalized tables
+- Leverages database constraints (PRIMARY KEY, UNIQUE, FOREIGN KEY)
+- Uses joins to retrieve related data from multiple tables
+- Maintains data integrity through referential constraints
+
+## Implementation Notes
 
 - The web application runs on port 1304 by default
 - All employee emails are automatically converted to lowercase
 - The view `vw_employees` provides a convenient way to query employee data with department and role information
-- The Java REPL supports basic PostgreSQL commands and provides formatted output
+- The Java REPL supports all standard PostgreSQL commands and provides formatted output
+- Table constraints (PRIMARY KEY, UNIQUE, NOT NULL) are enforced at the database level
+- Indexes can be created to optimize frequently accessed columns
+- Data retrieval uses SQL joins to combine related information from multiple tables
+
+## License
+
+This project is part of the Pesapal technical challenge.
