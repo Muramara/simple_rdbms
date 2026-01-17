@@ -240,4 +240,4 @@ The Node.js web application connects directly to PostgreSQL via the `pg` driver,
 
 ## License
 
-This project is part of the Pesapal technical challenge.
+This project is part of a personal portfolio demonstrating relational database concepts, SQL execution, and REPL-based system design.
