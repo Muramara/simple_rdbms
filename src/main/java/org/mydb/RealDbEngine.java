@@ -1,4 +1,4 @@
-package org.pesapal;
+package org.mydb;
 
 import java.sql.*;
 
