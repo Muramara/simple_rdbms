@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employees</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #f4f4f4;
+        }
+
+        button {
+            padding: 6px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: #fff;
+            width: 400px;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 4px;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+        }
+
+        .modal-content input,
+        .modal-content select {
+            width: 100%;
+            padding: 6px;
+            margin-bottom: 10px;
+        }
+
+        .actions {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Employees</h2>
+
+<button onclick="openCreateModal()">Create Employee</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Hire Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% employees.forEach(emp => { %>
+            <tr>
+                <td><%= emp.employee_id %></td>
+                <td><%= emp.employee_name %></td>
+                <td><%= emp.company_email %></td>
+                <td><%= emp.department_name %></td>
+                <td><%= emp.department_role_name %></td>
+                <td><%= emp.hire_date.toISOString().split('T')[0] %></td>
+                <td>
+                    <button onclick='openEditModal(<%- JSON.stringify(emp) %>)'>Edit</button>
+
+                    <form action="/delete-employee" method="POST" style="display:inline">
+                        <input type="hidden" name="employee_id" value="<%= emp.employee_id %>">
+                        <button type="submit" onclick="return confirm('Delete this employee?')">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+
+<!-- CREATE MODAL -->
+<div class="modal" id="createModal">
+    <div class="modal-content">
+        <h3>Create Employee</h3>
+        <form action="/add-employee" method="POST">
+            <input name="employee_name" placeholder="Employee Name" required>
+            <input name="company_email" type="email" placeholder="Company Email" required>
+
+            <select name="department_role_id" required>
+                <option value="">Select Role</option>
+                <% department_roles.forEach(role => { %>
+                    <option value="<%= role.department_role_id %>">
+                        <%= role.department_role_name %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <input type="date" name="hire_date" required>
+
+            <div class="actions">
+                <button type="button" onclick="closeCreateModal()">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h3>Edit Employee</h3>
+        <form action="/update-employee" method="POST">
+            <input type="hidden" name="employee_id" id="edit_employee_id">
+
+            <input name="employee_name" id="edit_name" required>
+            <input name="company_email" id="edit_email" type="email" required>
+
+            <select name="department_role_id" id="edit_role" required>
+                <% department_roles.forEach(role => { %>
+                    <option value="<%= role.department_role_id %>">
+                        <%= role.department_role_name %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <input type="date" name="hire_date" id="edit_hire_date" required>
+
+            <div class="actions">
+                <button type="button" onclick="closeEditModal()">Cancel</button>
+                <button type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openCreateModal() {
+        document.getElementById('createModal').style.display = 'block';
+    }
+
+    function closeCreateModal() {
+        document.getElementById('createModal').style.display = 'none';
+    }
+
+    function openEditModal(emp) {
+        document.getElementById('edit_employee_id').value = emp.employee_id;
+        document.getElementById('edit_name').value = emp.employee_name;
+        document.getElementById('edit_email').value = emp.company_email;
+        document.getElementById('edit_hire_date').value = emp.hire_date.split('T')[0];
+
+        // Match role by name (since vw_employees doesn’t expose role ID)
+        const roleSelect = document.getElementById('edit_role');
+        for (let opt of roleSelect.options) {
+            if (opt.text === emp.department_role_name) {
+                opt.selected = true;
+                break;
+            }
+        }
+
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
