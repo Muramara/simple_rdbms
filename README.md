@@ -78,7 +78,7 @@ The application uses the following database structure:
 2. Run the SQL script to create tables and initial data:
 
 ```bash
-psql -U your_username -d your_database -f Database/pesapal_challenge.sql
+psql -U your_username -d your_database -f Database/mydb.sql
 ```
 
 ### Node.js Web Application Setup
@@ -109,7 +109,7 @@ node index.js
 
 ### Java REPL Setup
 
-1. Update database credentials in `src/main/java/org/pesapal/Main.java`:
+1. Update database credentials in `src/main/java/org/mydb/Main.java`:
 
 ```java
 String url = "jdbc:postgresql://localhost:5432/your_database";
@@ -131,8 +131,8 @@ mvn exec:java
 ```
 .
 ├── Database/
-│   └── pesapal_challenge.sql       # Database schema and sample data
-├── src/main/java/org/pesapal/
+│   └── mydb.sql       # Database schema and sample data
+├── src/main/java/org/mydb/
 │   ├── Main.java                   # Java REPL entry point
 │   ├── DbRepl.java                 # REPL implementation
 │   ├── DatabaseEngine.java         # Database interface
